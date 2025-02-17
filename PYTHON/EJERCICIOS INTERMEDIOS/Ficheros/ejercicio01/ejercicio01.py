@@ -22,6 +22,8 @@
 
 # notas_file
 
+""" EJERCICIO REALIZADO CON MUCHA AYUDA DE PÁGINAS EXTERNAS E IAs GENERATIVAS."""
+
 import csv
 
 def cargar_datos(nombre_archivo):
