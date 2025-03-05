@@ -2,11 +2,17 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+
+### ROUTER -----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 router = APIRouter(
     prefix="/producto", 
     tags=["producto"], 
     responses={404: {"message": "No se han encontrado productos"}}
 )
+
+
+### CLASE MODELO -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Producto(BaseModel):
     id: Optional[int] = None  # EL ID PUEDE SER NONE (NO SE INTRODUCE EN EL REQUEST BODY)
@@ -14,6 +20,8 @@ class Producto(BaseModel):
     precio: float
     en_oferta: bool
 
+
+### LISTA DE PRODUCTOS (SIMULADOR DE "import.sql") -------------------------------------------------------------------------------------------------------------------
 
 lista_productos = [
     Producto(id=1, nombre="Sopa de tomate", precio=2.50, en_oferta=True),
@@ -39,16 +47,21 @@ lista_productos = [
 ]
 
 
+### ENDPOINTS --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# OBTENER TODOS LOS PRODUCTOS (findAll)
 @router.get("/")
 async def get_all_productos():
     return lista_productos
 
 
+# OBTENER UN PRODUCTO POR ID (findById)
 @router.get("/{id}")
 async def get_producto(id: int):
     return find_by_id(id)
 
 
+# CREAR UN NUEVO PRODUCTO (save)
 @router.post("/", status_code=201)
 async def create_producto(producto: Producto): 
     producto.id = max([p.id for p in lista_productos], default=0) + 1   # ESTO ASEGURA QUE EL ID NO COINCIDA CON NINGÚN OTRO
@@ -60,6 +73,7 @@ async def create_producto(producto: Producto):
         return producto
 
 
+# EDITAR UN PRODUCTO POR ID (save / edit)
 @router.put("/{id}", status_code=200)
 async def update_producto(id: int, producto: Producto):
     producto_lista = find_by_id(id)
@@ -69,14 +83,15 @@ async def update_producto(id: int, producto: Producto):
     return producto_lista
 
 
+# BORRAR UN PRODUCTO POR ID (delete)
 @router.delete("/{id}", status_code=204)
 async def delete_producto(id: int):
     producto = find_by_id(id)
     lista_productos.remove(producto)
 
 
-# MÉTODOS DE REPOSITORIO ------------------------------------------------------------------------------
-       
+### MÉTODOS DE REPOSITORIO -------------------------------------------------------------------------------------------------------------------------------------------
+
 def find_by_id(id: int):
     for producto in lista_productos:
         if producto.id == id:
