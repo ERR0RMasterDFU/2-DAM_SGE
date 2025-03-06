@@ -76,11 +76,14 @@ async def create_producto(producto: Producto):
 # EDITAR UN PRODUCTO POR ID (save / edit)
 @router.put("/{id}", status_code=200)
 async def update_producto(id: int, producto: Producto):
-    producto_lista = find_by_id(id)
-    producto_lista.nombre = producto.nombre
-    producto_lista.precio = producto.precio
-    producto_lista.en_oferta = producto.en_oferta
-    return producto_lista
+    if any(p.nombre == producto.nombre for p in lista_productos):
+        raise HTTPException(status_code=409, detail="Ya existe un producto con el mismo nombre")
+    else:
+        producto_lista = find_by_id(id)
+        producto_lista.nombre = producto.nombre
+        producto_lista.precio = producto.precio
+        producto_lista.en_oferta = producto.en_oferta
+        return producto_lista
 
 
 # BORRAR UN PRODUCTO POR ID (delete)
